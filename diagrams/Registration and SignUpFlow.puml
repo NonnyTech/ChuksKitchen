@@ -1,0 +1,18 @@
+@startuml
+title Signup and Verify Flow
+actor User
+participant Frontend
+participant Backend
+database DB
+
+User -> Frontend: Fill signup form (email/phone, password, referral)
+Frontend -> Backend: POST /api/users/signup
+Backend -> DB: Create User record with OTP and expiry
+Backend -> Frontend: Return OTP (for demo)
+
+User -> Frontend: Enter OTP
+Frontend -> Backend: POST /api/users/verify
+Backend -> DB: Find user by email, validate OTP and expiry
+Backend -> DB: Set IsVerified = true
+Backend -> Frontend: 200 OK
+@enduml
