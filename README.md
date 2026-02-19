@@ -63,14 +63,10 @@ Notes, conventions and caveats
 
 How to get created userId
 - Signup currently returns the created user object (OTP) but if you need the `Id` from signup I can modify the controller to include it. Alternatively inspect the SQLite DB (`DefaultConnection`) to query the `Users` table.
-
-Diagrams and data model
-- PlantUML sources are in `diagrams/` and can be rendered to PNG. See `diagrams/README.md` for commands to generate PNG files.
-
+- 
 Deliverables included
 - Working API (this repo)
-- PlantUML sources for required flow diagrams (in `diagrams/`)
-- Data model source (PlantUML ER) in `diagrams/`
+- Data model source
 - README with run & API instructions (this file)
 
 If you want I will now render the PlantUML files into PNG and place them under `diagrams/png/` — I cannot render PNGs inside this environment, but I provide exact commands to run locally or on CI to generate them.
