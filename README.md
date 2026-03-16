@@ -68,9 +68,6 @@ Deliverables included
 - Working API (this repo)
 - Data model source
 - README with run & API instructions (this file)
-
-If you want I will now render the PlantUML files into PNG and place them under `diagrams/png/` — I cannot render PNGs inside this environment, but I provide exact commands to run locally or on CI to generate them.
-
 Contact
 - If any changes are needed in endpoints, I can update code and rerun the build.
 
