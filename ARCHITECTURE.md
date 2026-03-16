@@ -1,11 +1,9 @@
 # Architecture & Design Notes — Chuks Kitchen Backend
 
-This document explains the backend flows, edge-case handling, assumptions, and scalability considerations for the Chuks Kitchen project. It complements the code and PlantUML diagrams in `diagrams/`.
-
----
+This document explains the backend flows, edge-case handling, assumptions, and scalability considerations for the Chuks Kitchen project.
 ## 1) Flow explanations (step‑by‑step)
 
-Signup & Verify (see `diagrams/flows.puml`)
+Signup & Verify
 - User fills signup form (email or phone, password, confirmPassword, optional referral).
 - Frontend calls `POST /api/users/signup` (controller -> `UserService.SignupAsync`).
   - Service checks duplicates via `IUserRepository.GetByEmailOrPhoneAsync`.
@@ -16,7 +14,7 @@ Signup & Verify (see `diagrams/flows.puml`)
   - For demo/testing the generated OTP is returned in the signup response.
 - User submits OTP to `POST /api/users/verify` (`UserService.VerifyAsync`): server checks OTP value and expiry, sets `IsVerified=true`.
 
-Cart → Order (see `diagrams/order_flow.puml`)
+Cart → Order 
 - Customer browses foods: `GET /api/foods` -> `FoodRepository.GetAllAsync()` returns only available items (`IsAvailable == true`).
 - Add to cart: `POST /api/carts/add` -> `CartService.AddToCartAsync` / `CartRepository` creates cart and `CartItem`s or updates quantity.
 - Place order: `POST /api/orders` -> `OrderService.CreateAsync`:
@@ -26,7 +24,7 @@ Cart → Order (see `diagrams/order_flow.puml`)
   - Saves order in DB via `IOrderRepository`.
   - Returns created order with status.
 
-Admin food management (see `diagrams/admin_flow.puml`)
+Admin food management 
 - Admin logs in via `POST /api/users/login` to get `User.Id` (login uses `UserService.LoginAsync`).
 - Admin creates/updates food via protected endpoints:
   - `POST /api/foods` requires `CreateFoodDto.UserId` (UserService verifies `Role == "Admin"`).
@@ -73,19 +71,9 @@ The current implementation is intentionally simple. To support growth, consider 
   - Cache read-only data (food catalog) in Redis with TTL; invalidate on admin updates.
   - Add pagination for list endpoints (foods, orders).
 
-- Concurrency & ordering
-  - Implement optimistic concurrency tokens or database-level transactions when creating orders to avoid double‑booking inventory.
-  - Implement a reservation step (place a hold on items) and background task to release holds if payment is not completed.
-
 - Asynchronous processing
   - Use a message queue (RabbitMQ, Azure Service Bus) for long-running tasks: payment processing, notifications, assignment to delivery.
   - Move order status updates (e.g., Confirmed → Preparing) driven by background workers.
-
-- Horizontal scale & stateless services
-  - Make API layer stateless; rely on shared DB & caches. Use container orchestration (Kubernetes) and autoscaling.
-
-- Observability
-  - Add metrics (Prometheus), request tracing (OpenTelemetry), and structured logs.
 
 - Security & identity
   - Replace plain-text password storage with ASP.NET Core Identity or a secure hasher and add an authentication system (JWT or cookie-based) for real role enforcement.
@@ -97,4 +85,3 @@ The current implementation is intentionally simple. To support growth, consider 
 - Services: `ChuksKitchen.Business/Services/*` (UserService, FoodService, CartService, OrderService)
 - Repositories: `ChuksKitchen.Business/Repositories/*` and interfaces in `IRepositories`
 - Entities & DbContext: `ChuksKitchen.Data/Entity/*`, `ChuksKitchen.Data/DataContext/ApplicationDbContext.cs`
-- Diagrams: `diagrams/*.puml` (render to PNG with PlantUML)
